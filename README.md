@@ -20,17 +20,16 @@ The goal of this project is to:
 - Java / Python (based on implementation)
 - Data Structures and Algorithms
 - File Handling / Data Processing
-- (Add any libraries or APIs if used)
 
 ---
 
 ## 📁 Project Structure
+
 meteorology1/
 │
-├── src/ # Source code
-├── data/ # Dataset files (if any)
-├── README.md # Project documentation
-
+├── src/        # Source code
+├── data/       # Dataset files (if any)
+├── README.md   # Project documentation
 
 ---
 
@@ -39,23 +38,47 @@ meteorology1/
 - Reads and processes meteorological data
 - Performs basic analysis on weather parameters
 - Demonstrates core programming and logic-building skills
-- Modular structure for easy extension
+- Easy to extend for advanced use cases
 
 ---
 
 ## ▶️ How to Run
 
-### Clone the repository
-```bash
+Clone the repository:
 git clone git@github.com:ritulsrivastava007/meteorology1.git
 
+Go to project directory:
 cd meteorology1
 
+Compile and run (Java example):
 javac Main.java
 java Main
 
+---
 
-If you want, I can also:
-- make it more **professional GitHub trending style**
-- add **badges + screenshots section**
-- or tailor it exactly to your actual code files 👍
+## 📊 Future Improvements
+
+- Real-time weather API integration
+- Data visualization using charts
+- Machine learning-based predictions
+- Enhanced dataset support
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome.  
+Feel free to fork this repository and submit pull requests.
+
+---
+
+## 📄 License
+
+This project is open-source under the MIT License.
+
+---
+
+## 👨‍💻 Author
+
+Ritul Srivastava  
+GitHub: https://github.com/ritulsrivastava007
