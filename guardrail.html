@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project GuardRail - Pitch Deck Edition</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-primary: #060b18;
+            --bg-card: #0f172a;
+            --bg-modal: #1e293b;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --status-safe: #10b981;
+            --status-risk: #ef4444;
+            --status-warning: #f59e0b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-primary); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
+
+        /* --- Utilities & Simple Animations --- */
+        .hidden { display: none !important; }
+        .blurred { filter: blur(8px); pointer-events: none; }
+        
+        @keyframes pulseAlert {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { transform: scale(1.02); box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* --- Landing Screen --- */
+        #landing-screen {
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            height: 100vh; text-align: center; padding: 24px;
+        }
+        .hero-icon { font-size: 5rem; color: var(--accent-cyan); margin-bottom: 24px; }
+        h1 { font-size: 3.5rem; font-weight: 800; margin-bottom: 12px; }
+        h1 span { color: var(--accent-cyan); }
+        .subtitle { color: var(--text-muted); max-width: 600px; margin-bottom: 32px; font-size: 1.1rem; line-height: 1.5; }
+        
+        /* Interactive Toggle Controls */
+        .toggle-container {
+            display: flex; background: var(--bg-card); padding: 6px; border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.1); margin-bottom: 32px; gap: 4px;
+        }
+        .toggle-btn {
+            background: transparent; border: none; color: var(--text-muted); padding: 10px 24px;
+            font-weight: 600; font-size: 0.95rem; border-radius: 20px; cursor: pointer; transition: all 0.2s;
+        }
+        .toggle-btn.active { background: var(--accent-blue); color: #fff; }
+
+        /* General Buttons */
+        .btn-action {
+            background: var(--accent-cyan); color: #000; font-weight: 700; font-size: 1.1rem;
+            padding: 14px 36px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-action:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* --- App Layout Dashboard Framework --- */
+        #app-container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+        
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .branding { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1.25rem; }
+        
+        .grid-main { display: grid; grid-template-columns: 1fr 340px; gap: 32px; }
+        @media (max-width: 900px) { .grid-main { grid-template-columns: 1fr; } }
+
+        .card { background: var(--bg-card); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); }
+        .card-title { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+        
+        .balance-num { font-size: 2.8rem; font-weight: 800; letter-spacing: -1px; }
+
+        /* Escrow Dynamic State Badges */
+        .escrow-container { margin-top: 12px; }
+        .escrow-badge {
+            display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px;
+            border-radius: 30px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+        }
+        .state-hold { background: rgba(245, 158, 11, 0.15); color: var(--status-warning); }
+        .state-locked { background: rgba(239, 68, 68, 0.15); color: var(--status-risk); }
+        .state-analysis { background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); }
+
+        /* Clean Ledger Entry List */
+        .tx-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-top: 1px solid rgba(255,255,255,0.05); }
+        .tx-target { display: flex; align-items: center; gap: 12px; }
+        .tx-icon { width: 40px; height: 40px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        .tx-icon.inbound { background: rgba(16, 185, 129, 0.1); color: var(--status-safe); }
+        .tx-value { font-weight: 700; font-size: 1.05rem; }
+
+        /* Flow Visualizer Sidecar Panel */
+        .flow-step { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+        .flow-step.active { color: #fff; font-weight: 700; }
+        .flow-step i { font-size: 1rem; width: 20px; text-align: center; color: rgba(255,255,255,0.15); }
+        .flow-step.active i { color: var(--accent-cyan); }
+
+        /* --- Dialog Overlays & Analytics Modals --- */
+        #modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(4, 7, 16, 0.95); z-index: 100;
+            display: flex; justify-content: center; align-items: center; padding: 24px;
+        }
+        .modal-box { background: var(--bg-modal); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; width: 100%; max-width: 500px; padding: 32px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .modal-box h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 8px; }
+        
+        /* Inbound SMS Context Preview Block */
+        .sms-preview-panel { background: #0f172a; border-left: 4px solid var(--accent-cyan); padding: 14px 16px; border-radius: 0 8px 8px 0; margin: 20px 0; text-align: left; }
+        .sms-lbl { font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; margin-bottom: 6px; }
+        .sms-msg { font-size: 0.95rem; line-height: 1.45; font-weight: 500; color: #fff; }
+        .sms-warn { font-size: 0.75rem; color: var(--status-warning); font-weight: 600; margin-top: 8px; display: flex; align-items: center; gap: 6px; }
+
+        /* Simplified Progress Bar Matrix */
+        .prog-track { background: rgba(255,255,255,0.08); height: 8px; border-radius: 4px; overflow: hidden; margin: 24px 0; }
+        .prog-fill { background: var(--accent-cyan); height: 100%; width: 0%; transition: width 0.1s linear; }
+
+        /* The Simplified 3-Point Module List */
+        .check-card { background: rgba(0,0,0,0.2); padding: 12px 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 0.9rem; font-weight: 500; }
+        .check-status { font-weight: 700; }
+
+        /* Metric Mini Highlights */
+        .stat-banner { background: #111827; padding: 14px; border-radius: 10px; margin-top: 20px; text-align: left; border: 1px dashed rgba(255,255,255,0.1); }
+        .stat-score { font-size: 1.3rem; font-weight: 800; color: var(--status-risk); }
+        .stat-bullet-list { list-style: none; margin-top: 8px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+        .stat-bullet-list li::before { content: "• "; color: var(--status-risk); font-weight: bold; }
+
+        /* Biometric Challenge Interface Container */
+        .biometric-scanner { width: 110px; height: 110px; border: 3px dashed var(--accent-cyan); border-radius: 50%; margin: 24px auto; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--accent-cyan); }
+        
+        /* Final Professional Explainer Cards Summary */
+        .summary-block { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 20px; text-align: left; margin: 20px 0; }
+        .summary-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.95rem; }
+        .summary-row:last-child { border: none; }
+        .summary-label { color: var(--text-muted); }
+        .summary-value { font-weight: 700; }
+
+        /* General Modal Button Rules */
+        .modal-btn { background: var(--accent-blue); color: white; border: none; border-radius: 6px; padding: 12px 24px; font-weight: 600; width: 100%; cursor: pointer; font-size: 1rem; margin-top: 16px; }
+        .modal-btn:hover { opacity: 0.95; }
+    </style>
+</head>
+<body>
+
+    <section id="landing-screen">
+        <div class="hero-icon"><i class="fas fa-shield-halved"></i></div>
+        <h1>Project <span>GuardRail</span></h1>
+        <p class="subtitle">Real-time banking isolation system detecting social engineering and remote intercept attacks instantly at the ledger interface.</p>
+        
+        <div class="toggle-container">
+            <button id="mode-unsafe" class="toggle-btn active" onclick="setMode('unsafe')">Unsafe Scenario (Scam)</button>
+            <button id="mode-safe" class="toggle-btn" onclick="setMode('safe')">Safe Scenario (Salary)</button>
+        </div>
+
+        <button class="btn-action" onclick="bootSimulation()">Start Demonstration</button>
+    </section>
+
+    <div id="app-container" class="hidden">
+        <header class="header-bar">
+            <div class="branding"><i class="fas fa-shield-halved" style="color:var(--accent-cyan)"></i> GuardRail Engine Terminal</div>
+            <div style="font-size:0.85rem; color:var(--text-muted); font-weight:600;"><i class="fas fa-circle" style="color:var(--status-safe); font-size:0.7rem;"></i> SANDBOX NODE SECURE</div>
+        </header>
+
+        <div class="grid-main">
+            <main id="main-view" style="display:flex; flex-direction:column; gap:24px;">
+                <div class="card">
+                    <p class="card-title">Available Capital Balance</p>
+                    <div id="account-balance" class="balance-num">&#8377;1,42,500.00</div>
+                    <div id="escrow-badge-area" class="escrow-container hidden"></div>
+                </div>
+
+                <div class="card">
+                    <p class="card-title">Pending Settlement Registry</p>
+                    <div class="tx-row">
+                        <div class="tx-target">
+                            <div id="row-icon-box" class="tx-icon inbound"><i class="fas fa-arrow-down"></i></div>
+                            <div>
+                                <h4 id="row-title" style="font-weight:600;">System Liquidity Clearing</h4>
+                                <p id="row-subtitle" style="font-size:0.8rem; color:var(--text-muted);">Awaiting ledger assessment...</p>
+                            </div>
+                        </div>
+                        <div id="row-val" class="tx-value" style="color:var(--status-safe);">&#8377;0.00</div>
+                    </div>
+                </div>
+            </main>
+
+            <aside class="card">
+                <p class="card-title">Live Pipeline Flow</p>
+                <div id="flow-1" class="flow-step"><i class="fas fa-circle-nodes"></i> Incoming Deposit</div>
+                <div id="flow-2" class="flow-step"><i class="fas fa-hourglass-half"></i> Escrow Activated</div>
+                <div id="flow-3" class="flow-step"><i class="fas fa-brain"></i> AI Analysis</div>
+                <div id="flow-4" class="flow-step"><i class="fas fa-triangle-exclamation"></i> Threat Decision</div>
+                <div id="flow-5" class="flow-step"><i class="fas fa-user-check"></i> Final Summary</div>
+            </aside>
+        </div>
+    </div>
+
+    <div id="modal-overlay" class="hidden">
+        
+        <div id="pane-analysis" class="modal-box hidden">
+            <h2>AI Analysis Layer</h2>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Inspecting real-time contextual transaction flags...</p>
+
+            <div class="sms-preview-panel">
+                <div class="sms-lbl">Intercepted Payload Ingest</div>
+                <div id="sms-body-content" class="sms-msg">...</div>
+                <div id="sms-threat-tag" class="sms-warn">...</div>
+            </div>
+
+            <div class="prog-track"><div id="analysis-bar" class="prog-fill"></div></div>
+
+            <div class="check-card">
+                <span>Sender Reputation</span>
+                <span id="chk-sender" class="check-status" style="color:var(--text-muted);">Checking...</span>
+            </div>
+            <div class="check-card">
+                <span>Device Telemetry</span>
+                <span id="chk-device" class="check-status" style="color:var(--text-muted);">Checking...</span>
+            </div>
+            <div class="check-card">
+                <span>User Behavior Profile</span>
+                <span id="chk-behavior" class="check-status" style="color:var(--text-muted);">Checking...</span>
+            </div>
+
+            <div id="analysis-insights" class="stat-banner hidden">
+                <div style="display:flex; justify-content:between; align-items:center; width:100%;">
+                    <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Threat Signature Output</span>
+                </div>
+                <div id="ai-score-label" class="stat-score" style="margin-top:4px;">AI Confidence: 0%</div>
+                <ul id="ai-reason-bullets" class="stat-bullet-list"></ul>
+            </div>
+
+            <button id="btn-analysis-next" class="modal-btn hidden" onclick="advanceFromAnalysis()"></button>
+        </div>
+
+        <div id="pane-biometric" class="modal-box hidden" style="text-align:center;">
+            <h2>Intent Certification</h2>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:12px;">Face ID scanning required to confirm local intent and isolate any active remote access sessions.</p>
+            <div class="biometric-scanner" id="bio-icon"><i class="fas fa-face-viewfinder"></i></div>
+            <button class="modal-btn" onclick="triggerBiometricScan()">Scan & Attest Intent</button>
+        </div>
+
+        <div id="pane-summary" class="modal-box hidden" style="text-align:center;">
+            <div id="summary-icon-box" style="font-size:3.5rem; margin-bottom:16px;"></div>
+            <h2 id="summary-title-header">Transaction Protected</h2>
+            <p id="summary-sub-desc" style="color:var(--text-muted); font-size:0.9rem; margin-bottom:4px;"></p>
+            
+            <div class="summary-block">
+                <div class="summary-row">
+                    <span class="summary-label">Transaction Volume</span>
+                    <span id="sum-val-amount" class="summary-value">&#8377;0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">GuardRail Action</span>
+                    <span id="sum-val-decision" class="summary-value"></span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Environment Status</span>
+                    <span id="sum-val-status" class="summary-value"></span>
+                </div>
+            </div>
+
+            <button class="modal-btn" style="background:var(--accent-cyan); color:#000; font-weight:700;" onclick="closeSuiteToLedger()">Acknowledge & Sync Ledger</button>
+        </div>
+
+    </div>
+
+    <script>
+        let demoMode = 'unsafe'; // Tracks scenario type: 'safe' or 'unsafe'
+        let liveBackendState = null; // Stores live polled data from FastAPI
+
+        const configurations = {
+            unsafe: {
+                title: "Anomalous Wire Transfer",
+                amount: "₹50,000.00",
+                sms: "“₹50,000 was transferred by mistake. Please return it immediately to UPI: scammer@upi”",
+                tag: "<i class='fas fa-triangle-exclamation'></i> GuardRail detected urgency manipulation.",
+                tagColor: "var(--status-risk)",
+                confidence: "96%",
+                reasons: ["Refund scam pattern matched", "Unknown sender endpoint", "Active remote desktop link active"],
+                checks: { sender: ["RISK", "var(--status-risk)"], device: ["RISK", "var(--status-risk)"], behavior: ["SUSPICIOUS", "var(--status-warning)"] }
+            },
+            safe: {
+                title: "Tech Mahindra Corporate Payroll",
+                amount: "₹48,000.00",
+                sms: "“Salary payment credit ledger dispatched for employee node Alex Mercer.”",
+                tag: "<i class='fas fa-circle-check'></i> Employer entity whitelist credentials matched.",
+                tagColor: "var(--status-safe)",
+                confidence: "4%",
+                reasons: ["Employer account verified", "Local host device normal", "Biometric behavior stable"],
+                checks: { sender: ["VERIFIED", "var(--status-safe)"], device: ["SECURE", "var(--status-safe)"], behavior: ["NORMAL", "var(--status-safe)"] }
+            }
+        };
+
+        function setMode(mode) {
+            demoMode = mode;
+            document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`mode-${mode}`).classList.add('active');
+        }
+
+        // Helper function to poll the async background tasks from your FastAPI state engine
+        async function pollBackendStatusUntilDone() {
+            return new Promise((resolve) => {
+                const interval = setInterval(async () => {
+                    try {
+                        const response = await fetch('http://127.0.0.1:8000/status');
+                        const statusData = await response.json();
+                        
+                        // Stop checking when backend finishes background processing
+                        if (statusData.ai_engine.ai_status !== "Analyzing" && statusData.ai_engine.ai_status !== "Intercepted") {
+                            clearInterval(interval);
+                            liveBackendState = statusData;
+                            resolve(statusData);
+                        }
+                    } catch (e) {
+                        clearInterval(interval);
+                        resolve(null);
+                    }
+                }, 400);
+            });
+        }
+
+        // --- CONNECTED TO YOUR NEW FASTAPI BACKEND SYSTEM ---
+        async function bootSimulation() {
+            try {
+                // 1. Wipe previous runtime logs from Python memory
+                await fetch('http://127.0.0.1:8000/reset', { method: 'POST' });
+
+                // 2. Fire structural API request to trigger async simulation
+                const simulateResponse = await fetch('http://127.0.0.1:8000/simulate', { method: 'POST' });
+                const initData = await simulateResponse.json();
+                
+                // Automatically adjust interface headers based on randomized live values from your background worker
+                if (initData && initData.transaction) {
+                    const tx = initData.transaction;
+                    document.getElementById('row-title').innerText = tx.sender_name;
+                    document.getElementById('row-val').innerText = `+₹${tx.amount.toLocaleString()}`;
+                    document.getElementById('sum-val-amount').innerText = `₹${tx.amount.toLocaleString()}`;
+                }
+            } catch (err) {
+                console.warn("FastAPI server node unreached. Executing standard UI fallbacks.", err);
+                // Hardcoded UI safe fallbacks if server drops out mid-pitch
+                const fallbackData = configurations[demoMode];
+                document.getElementById('row-title').innerText = fallbackData.title;
+                document.getElementById('row-val').innerText = `+${fallbackData.amount}`;
+                document.getElementById('sum-val-amount').innerText = fallbackData.amount;
+            }
+
+            // Unhide presentation view workspaces completely unchanged
+            document.getElementById('landing-screen').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+
+            executePipelineSequencer();
+        }
+
+        function executePipelineSequencer() {
+            const bBadge = document.getElementById('escrow-badge-area');
+            const subTitle = document.getElementById('row-subtitle');
+
+            setFlowStepActive(1);
+            
+            setTimeout(() => {
+                setFlowStepActive(2);
+                bBadge.classList.remove('hidden');
+                bBadge.innerHTML = `<span class="escrow-badge state-hold"><i class="fas fa-hourglass-start"></i> Escrow Hold Active</span>`;
+                subTitle.innerText = "Isolating capital asset line paths...";
+                subTitle.style.color = "var(--status-warning)";
+            }, 1200);
+
+            setTimeout(() => {
+                setFlowStepActive(3);
+                bBadge.innerHTML = `<span class="escrow-badge state-analysis"><i class="fas fa-brain"></i> Under AI Analysis</span>`;
+                subTitle.innerText = "Processing system security heuristics...";
+                subTitle.style.color = "var(--accent-cyan)";
+                
+                openModalView('pane-analysis');
+                runAnalysisProcessLoop();
+            }, 2600);
+        }
+
+        function setFlowStepActive(stepIndex) {
+            document.querySelectorAll('.flow-step').forEach(s => s.classList.remove('active'));
+            document.getElementById(`flow-${stepIndex}`).classList.add('active');
+        }
+
+        function openModalView(paneId) {
+            document.getElementById('modal-overlay').classList.remove('hidden');
+            document.getElementById('pane-analysis').classList.add('hidden');
+            document.getElementById('pane-biometric').classList.add('hidden');
+            document.getElementById('pane-summary').classList.add('hidden');
+            document.getElementById(paneId).classList.remove('hidden');
+        }
+
+        async function runAnalysisProcessLoop() {
+            const data = configurations[demoMode];
+            
+            document.getElementById('sms-body-content').innerText = data.sms;
+            const threatTag = document.getElementById('sms-threat-tag');
+            threatTag.innerHTML = data.tag;
+            threatTag.style.color = data.tagColor;
+
+            document.getElementById('analysis-insights').classList.add('hidden');
+            document.getElementById('btn-analysis-next').classList.add('hidden');
+            
+            const chkS = document.getElementById('chk-sender');
+            const chkD = document.getElementById('chk-device');
+            const chkB = document.getElementById('chk-behavior');
+            
+            chkS.innerText = "Checking..."; chkS.style.color = "var(--text-muted)";
+            chkD.innerText = "Checking..."; chkD.style.color = "var(--text-muted)";
+            chkB.innerText = "Checking..."; chkB.style.color = "var(--text-muted)";
+
+            const fill = document.getElementById('analysis-bar');
+            fill.style.width = '0%';
+            
+            let pct = 0;
+            const timer = setInterval(() => {
+                pct += 4;
+                if (pct <= 95) fill.style.width = `${pct}%`;
+            }, 100);
+
+            // Fetch true dynamic state machine calculations directly evaluated by FastAPI background workers
+            const engineState = await pollBackendStatusUntilDone();
+            
+            clearInterval(timer);
+            fill.style.width = '100%';
+
+            if (engineState) {
+                // Map the dynamic python server strings directly down onto original view layout checklist lines
+                chkS.innerText = engineState.ai_engine.sender_risk;
+                chkS.style.color = engineState.ai_engine.blacklist_hit ? "var(--status-risk)" : "var(--status-safe)";
+                
+                chkD.innerText = engineState.ai_engine.device_risk;
+                chkD.style.color = engineState.ai_engine.screen_share_detected ? "var(--status-risk)" : "var(--status-safe)";
+                
+                chkB.innerText = engineState.ai_engine.typing_anomaly ? "ANOMALOUS" : "STABLE";
+                chkB.style.color = engineState.ai_engine.typing_anomaly ? "var(--status-warning)" : "var(--status-safe)";
+            } else {
+                // Fallback static metrics mapping if API drops offline mid-loop
+                setTimeout(() => { chkS.innerText = data.checks.sender[0]; chkS.style.color = data.checks.sender[1]; }, 400);
+                setTimeout(() => { chkD.innerText = data.checks.device[0]; chkD.style.color = data.checks.device[1]; }, 800);
+                setTimeout(() => { chkB.innerText = data.checks.behavior[0]; chkB.style.color = data.checks.behavior[1]; }, 1200);
+            }
+
+            setTimeout(() => {
+                displayAnalysisConclusiveMetrics(engineState);
+            }, 1400);
+        }
+
+        function displayAnalysisConclusiveMetrics(engineState) {
+            setFlowStepActive(4);
+
+            let riskScore = demoMode === 'unsafe' ? "96%" : "4%";
+            let reasonsList = configurations[demoMode].reasons;
+            let isBlockedPath = demoMode === 'unsafe';
+
+            if (engineState) {
+                riskScore = `${engineState.ai_engine.risk_score}%`;
+                isBlockedPath = engineState.ai_engine.final_decision === "Blocked";
+                
+                reasonsList = [];
+                if (engineState.ai_engine.blacklist_hit) reasonsList.push("Sender hit system blacklists database pattern");
+                if (engineState.ai_engine.screen_share_detected) reasonsList.push("Active remote interface sharing pipeline stream active");
+                if (engineState.ai_engine.typing_anomaly) reasonsList.push("Cognitive delay/typing stress heuristics trigger");
+                if (reasonsList.length === 0) reasonsList.push("Telemetry baseline profiles match user safe configurations window");
+            }
+
+            const scoreLbl = document.getElementById('ai-score-label');
+            scoreLbl.innerText = `AI Confidence: ${riskScore}`;
+            scoreLbl.style.color = isBlockedPath ? 'var(--status-risk)' : 'var(--status-safe)';
+
+            const list = document.getElementById('ai-reason-bullets');
+            list.innerHTML = '';
+            reasonsList.forEach(r => {
+                const li = document.createElement('li');
+                li.innerText = r;
+                if(!isBlockedPath) li.style.setProperty('--status-risk', 'var(--status-safe)');
+                list.appendChild(li);
+            });
+
+            document.getElementById('analysis-insights').classList.remove('hidden');
+            
+            const nextBtn = document.getElementById('btn-analysis-next');
+            nextBtn.classList.remove('hidden');
+            nextBtn.innerText = isBlockedPath ? "Isolate Threat & Verify Identity" : "Clear & Release Funds";
+            if(!isBlockedPath) nextBtn.style.background = "var(--status-safe)";
+            else nextBtn.style.background = "var(--accent-blue)";
+        }
+
+        function advanceFromAnalysis() {
+            const isBlockedPath = liveBackendState ? (liveBackendState.ai_engine.final_decision === "Blocked") : (demoMode === 'unsafe');
+            if (isBlockedPath) {
+                openModalView('pane-biometric');
+            } else {
+                buildFinalExecutiveSummary();
+            }
+        }
+
+        function triggerBiometricScan() {
+            const icon = document.getElementById('bio-icon').querySelector('i');
+            icon.className = "fas fa-spinner fa-spin";
+            
+            setTimeout(() => {
+                icon.className = "fas fa-user-check";
+                icon.style.color = "var(--status-safe)";
+                
+                setTimeout(() => {
+                    buildFinalExecutiveSummary();
+                }, 1000);
+            }, 2000);
+        }
+
+        function buildFinalExecutiveSummary() {
+            setFlowStepActive(5);
+            openModalView('pane-summary');
+
+            const iconBox = document.getElementById('summary-icon-box');
+            const hTitle = document.getElementById('summary-title-header');
+            const desc = document.getElementById('summary-sub-desc');
+            const dVal = document.getElementById('sum-val-decision');
+            const sVal = document.getElementById('sum-val-status');
+
+            const isBlockedPath = liveBackendState ? (liveBackendState.ai_engine.final_decision === "Blocked") : (demoMode === 'unsafe');
+
+            if(isBlockedPath) {
+                iconBox.className = "fas fa-shield-halved";
+                iconBox.style.color = "var(--status-safe)";
+                iconBox.style.animation = "pulseAlert 2s infinite";
+                
+                hTitle.innerText = "Transaction Shielded";
+                desc.innerText = "Malicious transfer blocked. Funds safely retained.";
+                
+                dVal.innerText = "Blocked"; dVal.style.color = "var(--status-risk)";
+                sVal.innerText = "User Safe"; sVal.style.color = "var(--status-safe)";
+            } else {
+                iconBox.className = "fas fa-circle-check";
+                iconBox.style.color = "var(--status-safe)";
+                iconBox.style.animation = "none";
+                
+                hTitle.innerText = "Funds Released";
+                desc.innerText = "Verification check clear. Asset added to available cash balance.";
+                
+                dVal.innerText = "Approved"; dVal.style.color = "var(--status-safe)";
+                sVal.innerText = "Settled"; sVal.style.color = "var(--status-safe)";
+            }
+        }
+
+        function closeSuiteToLedger() {
+            document.getElementById('modal-overlay').classList.add('hidden');
+            
+            const bal = document.getElementById('account-balance');
+            const badge = document.getElementById('escrow-badge-area');
+            const txIcon = document.getElementById('row-icon-box');
+            const txSub = document.getElementById('row-subtitle');
+            const txVal = document.getElementById('row-val');
+
+            const isBlockedPath = liveBackendState ? (liveBackendState.ai_engine.final_decision === "Blocked") : (demoMode === 'unsafe');
+
+            if(isBlockedPath) {
+                bal.innerText = "₹1,42,500.00"; // Preserved original funds balance amount
+                badge.innerHTML = `<span class="escrow-badge state-locked"><i class="fas fa-ban"></i> Blocked & Defended</span>`;
+                txIcon.innerHTML = `<i class="fas fa-shield-virus"></i>`;
+                txIcon.style.background = "rgba(239, 68, 68, 0.1)";
+                txIcon.style.color = "var(--status-risk)";
+                txSub.innerText = "Fraud payload isolated and rejected.";
+                txSub.style.color = "var(--status-risk)";
+                txVal.style.setProperty('text-decoration', 'line-through');
+                txVal.style.color = "var(--text-muted)";
+            } else {
+                if (liveBackendState) {
+                    bal.innerText = `₹${liveBackendState.ledger.displayed_balance.toLocaleString()}`;
+                } else {
+                    bal.innerText = "₹1,90,500.00"; // Ledger updated with incoming deposit fallback
+                }
+                badge.innerHTML = `<span class="escrow-badge state-analysis" style="background:rgba(16,185,129,0.15); color:var(--status-safe);"><i class="fas fa-circle-check"></i> Disbursed</span>`;
+                txSub.innerText = "Settled directly into standard ledger.";
+                txSub.style.color = "var(--status-safe)";
+            }
+
+            // Restore basic layout icons to baseline standards configurations parameters
+            document.getElementById('bio-icon').querySelector('i').className = "fas fa-face-viewfinder";
+            document.getElementById('bio-icon').querySelector('i').style.removeProperty('color');
+        }
+    </script>
+</body>
+</html>
