@@ -17,6 +17,13 @@ BLACKLIST = {
     "UnknownXYZ"
 }
 
+# Stores latest simulation state
+state = {
+    "transaction": {},
+    "ai_engine": {},
+    "ledger": {}
+}
+
 
 @app.get("/")
 def home():
@@ -25,8 +32,27 @@ def home():
     }
 
 
+@app.post("/reset")
+def reset():
+    global state
+
+    state = {
+        "transaction": {},
+        "ai_engine": {},
+        "ledger": {}
+    }
+
+    return {"message": "Simulation reset"}
+
+
+@app.get("/status")
+def status():
+    return state
+
+
 @app.post("/simulate")
 def simulate(tx: Transaction):
+    global state
 
     # Rule 1: Blacklisted sender -> Very High Risk
     if tx.sender in BLACKLIST:
@@ -44,34 +70,69 @@ def simulate(tx: Transaction):
     else:
         risk = round(random.uniform(0.10, 0.50), 2)
 
-    # Final Decision
+    blacklist_hit = tx.sender in BLACKLIST
+    screen_share_detected = risk >= 0.80
+    typing_anomaly = risk >= 0.80
+
+    # Decide final status
     if risk >= 0.80:
-        return {
-            "status": "BLOCKED",
-            "risk_score": risk,
-            "escrow": True,
-            "screen_lock": 180,
-            "message": (
-                "Suspicious transaction detected. "
-                "Funds moved to Hidden Escrow and device temporarily locked."
-            )
-        }
+        decision = "Blocked"
+        status = "BLOCKED"
+        escrow = True
+        screen_lock = 180
+        message = (
+            "Suspicious transaction detected. "
+            "Funds moved to Hidden Escrow and device temporarily locked."
+        )
 
     elif risk >= 0.50:
-        return {
-            "status": "REVIEW",
-            "risk_score": risk,
-            "escrow": False,
-            "screen_lock": 30,
-            "message": (
-                "Transaction requires additional verification before approval."
-            )
-        }
+        decision = "Review"
+        status = "REVIEW"
+        escrow = False
+        screen_lock = 30
+        message = (
+            "Transaction requires additional verification before approval."
+        )
+
+    else:
+        decision = "Approved"
+        status = "SAFE"
+        escrow = False
+        screen_lock = 0
+        message = "Transaction verified successfully."
+
+    balance = 142500
+
+    if decision == "Approved":
+        balance += tx.amount
+
+    state["transaction"] = {
+        "sender_name": tx.sender,
+        "amount": tx.amount
+    }
+
+    state["ai_engine"] = {
+        "ai_status": "Finished",
+        "risk_score": int(risk * 100),
+        "sender_risk": "HIGH" if blacklist_hit else "LOW",
+        "device_risk": "RISK" if screen_share_detected else "SAFE",
+        "typing_anomaly": typing_anomaly,
+        "blacklist_hit": blacklist_hit,
+        "screen_share_detected": screen_share_detected,
+        "final_decision": decision
+    }
+
+    state["ledger"] = {
+        "displayed_balance": balance
+    }
 
     return {
-        "status": "SAFE",
+        "status": status,
         "risk_score": risk,
-        "escrow": False,
-        "screen_lock": 0,
-        "message": "Transaction verified successfully."
+        "escrow": escrow,
+        "screen_lock": screen_lock,
+        "message": message,
+        "transaction": state["transaction"],
+        "ai_engine": state["ai_engine"],
+        "ledger": state["ledger"]
     }
