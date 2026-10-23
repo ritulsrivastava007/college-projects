@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+*.class
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+=======
 
 # ==============================
 # Operating System Files
@@ -212,3 +220,4 @@ credentials.json
 # ==============================
 test-results/
 coverage-reports/
+>>>>>>> fb9d093caa87b3a0cd2a4d231bd8045bbe4993af
