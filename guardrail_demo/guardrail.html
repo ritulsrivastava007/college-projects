@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project GuardRail - Pitch Deck Edition</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-primary: #030712;
+            --bg-card: rgba(15, 23, 42, 0.45);
+            --bg-modal: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --status-safe: #10b981;
+            --status-risk: #ef4444;
+            --status-warning: #f59e0b;
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --transition-premium: 300ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Smooth Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        
+        body { 
+            background-color: var(--bg-primary); 
+            color: var(--text-main); 
+            min-height: 100vh; 
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-image: 
+                radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 10% 80%, rgba(59, 130, 246, 0.03) 0%, transparent 50%);
+        }
+
+        /* --- Global Focus Styles --- */
+        button:focus-visible {
+            outline: 2px solid var(--accent-cyan);
+            outline-offset: 2px;
+        }
+
+        /* --- Animation Utilities --- */
+        .hidden { display: none !important; }
+        .blurred { filter: blur(12px); pointer-events: none; }
+        
+        .fade-in { animation: fadeIn var(--transition-premium) forwards; }
+        .scale-up { animation: scaleUp var(--transition-premium) forwards; }
+        .pop-in { animation: popIn 400ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleUp { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        @keyframes pulseAlert {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { transform: scale(1.02); box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        @keyframes scanningLine {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(360px); }
+        }
+
+        /* --- Landing Screen --- */
+        #landing-screen {
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            min-height: 100vh; text-align: center; padding: 40px 24px;
+        }
+        .hero-icon { font-size: 5rem; color: var(--accent-cyan); margin-bottom: 28px; filter: drop-shadow(0 0 20px rgba(6, 182, 212, 0.2)); }
+        h1 { font-size: 3.5rem; font-weight: 800; margin-bottom: 16px; letter-spacing: -1px; }
+        h1 span { color: var(--accent-cyan); }
+        .subtitle { color: var(--text-muted); max-width: 600px; margin-bottom: 36px; font-size: 1.1rem; line-height: 1.6; }
+        
+        .toggle-container {
+            display: flex; background: rgba(15, 23, 42, 0.6); padding: 4px; border-radius: 30px;
+            border: 1px solid var(--border-subtle); margin-bottom: 36px; gap: 4px;
+        }
+        .toggle-btn {
+            background: transparent; border: none; color: var(--text-muted); padding: 12px 24px;
+            font-weight: 600; font-size: 0.95rem; border-radius: 26px; cursor: pointer; transition: all var(--transition-premium);
+        }
+        .toggle-btn.active { background: var(--accent-blue); color: #fff; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25); }
+        .toggle-btn:not(.active):hover { color: #fff; background: rgba(255, 255, 255, 0.03); }
+
+        .btn-action {
+            background: var(--accent-cyan); color: #000; font-weight: 700; font-size: 1.1rem;
+            padding: 16px 40px; border: none; border-radius: 12px; cursor: pointer; transition: all var(--transition-premium);
+            box-shadow: 0 4px 14px rgba(6, 182, 212, 0.2);
+        }
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(6, 182, 212, 0.35); }
+        .btn-action:active { transform: translateY(0); }
+
+        /* --- App Layout Dashboard Framework --- */
+        #app-container { max-width: 1140px; width: 100%; margin: 0 auto; padding: 40px 24px; display: flex; flex-direction: column; flex: 1; }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 36px; }
+        .branding { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1.3rem; letter-spacing: -0.5px; }
+        
+        .grid-main { display: grid; grid-template-columns: 1fr 340px; gap: 32px; }
+        @media (max-width: 960px) { .grid-main { grid-template-columns: 1fr; gap: 24px; } }
+
+        .card { 
+            background: var(--bg-card); 
+            border-radius: 16px; 
+            padding: 28px; 
+            border: 1px solid var(--border-subtle); 
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: border-color var(--transition-premium), box-shadow var(--transition-premium), transform var(--transition-premium); 
+        }
+        .card:hover { border-color: rgba(6, 182, 212, 0.2); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3); }
+        .card-title { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; }
+        
+        .balance-num { font-size: 3rem; font-weight: 800; letter-spacing: -1.5px; }
+
+        .escrow-container { margin-top: 16px; min-height: 34px; display: flex; align-items: center; }
+        .escrow-badge {
+            display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px;
+            border-radius: 30px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+            border: 1px solid transparent;
+        }
+        .state-hold { background: rgba(245, 158, 11, 0.1); color: var(--status-warning); border-color: rgba(245, 158, 11, 0.15); }
+        .state-locked { background: rgba(239, 68, 68, 0.1); color: var(--status-risk); border-color: rgba(239, 68, 68, 0.15); }
+        .state-analysis { background: rgba(6, 182, 212, 0.1); color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.15); }
+
+        .tx-row { display: flex; justify-content: space-between; align-items: center; padding-top: 20px; border-top: 1px solid var(--border-subtle); }
+        .tx-target { display: flex; align-items: center; gap: 16px; }
+        .tx-icon { width: 44px; height: 44px; background: rgba(255,255,255,0.03); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: all var(--transition-premium); }
+        .tx-icon.inbound { background: rgba(16, 185, 129, 0.08); color: var(--status-safe); border: 1px solid rgba(16, 185, 129, 0.1); }
+        .tx-value { font-weight: 700; font-size: 1.15rem; letter-spacing: -0.5px; }
+
+        /* --- Pipeline Sidebar --- */
+        .flow-step { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; color: var(--text-muted); font-size: 0.95rem; font-weight: 500; transition: all var(--transition-premium); }
+        .flow-step:last-child { margin-bottom: 0; }
+        .flow-step.active { color: #fff; font-weight: 700; }
+        .flow-step.completed { color: var(--status-safe); font-weight: 600; }
+        .flow-step i { font-size: 0.9rem; width: 24px; height: 24px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.15); transition: all var(--transition-premium); }
+        .flow-step.active i { color: var(--accent-cyan); border-color: var(--accent-cyan); background: rgba(6, 182, 212, 0.05); box-shadow: 0 0 10px rgba(6, 182, 212, 0.2); }
+        .flow-step.completed i { color: var(--status-safe); border-color: var(--status-safe); background: rgba(16, 185, 129, 0.05); }
+
+        /* --- Modals Framework --- */
+        #modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(3, 7, 18, 0.85); z-index: 100;
+            display: flex; justify-content: center; align-items: center; padding: 24px;
+            backdrop-filter: blur(8px);
+        }
+        .modal-box { 
+            background: var(--bg-modal); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 20px; 
+            width: 100%; 
+            max-width: 500px; 
+            padding: 32px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        .modal-box h2 { font-size: 1.55rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.5px; }
+        
+        /* Interactive Scan Active Overlay Line */
+        .scan-overlay-line {
+            position: absolute; left: 0; top: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+            animation: scanningLine 2s linear infinite;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .sms-preview-panel { background: #090d16; border-left: 4px solid var(--accent-cyan); padding: 16px; border-radius: 0 10px 10px 0; margin: 20px 0; text-align: left; border-top: 1px solid var(--border-subtle); border-right: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }
+        .sms-lbl { font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .sms-msg { font-size: 0.95rem; line-height: 1.5; font-weight: 500; color: #fff; }
+        .sms-warn { font-size: 0.8rem; color: var(--status-warning); font-weight: 600; margin-top: 10px; display: flex; align-items: center; gap: 6px; }
+
+        .prog-track { background: rgba(255,255,255,0.05); height: 6px; border-radius: 3px; overflow: hidden; margin: 24px 0; }
+        .prog-fill { background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue)); height: 100%; width: 0%; transition: width 200ms cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .check-card { background: rgba(255,255,255,0.01); border: 1px solid var(--border-subtle); padding: 14px 16px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 0.9rem; font-weight: 500; transition: border-color var(--transition-premium); }
+        .check-status { font-weight: 700; font-size: 0.85rem; letter-spacing: 0.5px; }
+
+        .stat-banner { background: #050811; padding: 18px; border-radius: 12px; margin-top: 20px; text-align: left; border: 1px dashed rgba(255,255,255,0.1); }
+        .stat-score-container { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 700; margin-top: 4px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .stat-score { font-size: 1.15rem; font-weight: 800; color: var(--status-risk); }
+        .stat-time { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+        .stat-bullet-list { list-style: none; margin-top: 10px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+        .stat-bullet-list li { margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+        .stat-bullet-list li:last-child { margin-bottom: 0; }
+        .stat-bullet-list li::before { content: "• "; color: var(--status-risk); font-weight: bold; font-size: 1.1rem; }
+
+        .biometric-scanner { width: 100px; height: 100px; border: 2px dashed var(--accent-cyan); border-radius: 50%; margin: 24px auto; display: flex; align-items: center; justify-content: center; font-size: 2.8rem; color: var(--accent-cyan); background: rgba(6, 182, 212, 0.02); transition: all var(--transition-premium); }
+        
+        .summary-block { background: rgba(255,255,255,0.01); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 16px 20px; text-align: left; margin: 20px 0; }
+        .summary-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.95rem; }
+        .summary-row:last-child { border: none; }
+        .summary-label { color: var(--text-muted); }
+        .summary-value { font-weight: 700; }
+
+        .modal-btn { background: var(--accent-blue); color: white; border: none; border-radius: 8px; padding: 14px 24px; font-weight: 600; width: 100%; cursor: pointer; font-size: 1rem; margin-top: 16px; transition: all var(--transition-premium); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15); }
+        .modal-btn:hover { opacity: 0.95; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(59, 130, 246, 0.25); }
+        .modal-btn:active { transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+    <section id="landing-screen" class="fade-in">
+        <div class="hero-icon"><i class="fas fa-shield-halved"></i></div>
+        <h1>Project <span>GuardRail</span></h1>
+        <p class="subtitle">AI-powered banking security that isolates suspicious deposits before users interact with potential scam transactions.</p>
+        
+        <div class="toggle-container">
+            <button id="mode-unsafe" class="toggle-btn active" onclick="setMode('unsafe')" aria-label="Select Unsafe Scenario">Unsafe Scenario (Scam)</button>
+            <button id="mode-safe" class="toggle-btn" onclick="setMode('safe')" aria-label="Select Safe Scenario">Safe Scenario (Salary)</button>
+        </div>
+
+        <button class="btn-action" onclick="bootSimulation()">Start Demonstration</button>
+    </section>
+
+    <div id="app-container" class="hidden">
+        <header class="header-bar">
+            <div class="branding"><i class="fas fa-shield-halved" style="color:var(--accent-cyan)"></i> GuardRail Engine Terminal</div>
+            <div style="font-size:0.85rem; color:#cbd5e1; font-weight:600; display:flex; align-items:center; gap:6px;"><i class="fas fa-circle" style="color:var(--status-safe); font-size:0.6rem;"></i> SANDBOX NODE SECURE</div>
+        </header>
+
+        <div class="grid-main">
+            <main id="main-view" style="display:flex; flex-direction:column; gap:24px;">
+                <div class="card fade-in">
+                    <p class="card-title">Available Capital Balance</p>
+                    <div id="account-balance" class="balance-num">&#8377;1,42,500.00</div>
+                    <div id="escrow-badge-area" class="escrow-container hidden"></div>
+                </div>
+
+                <div class="card fade-in" style="animation-delay: 50ms;">
+                    <p class="card-title">Pending Settlement Registry</p>
+                    <div class="tx-row">
+                        <div class="tx-target">
+                            <div id="row-icon-box" class="tx-icon inbound"><i class="fas fa-arrow-down"></i></div>
+                            <div>
+                                <h4 id="row-title" style="font-weight:600;">Incoming Bank Transfer</h4>
+                                <p id="row-subtitle" style="font-size:0.8rem; color:var(--text-muted);">Waiting for AI verification...</p>
+                            </div>
+                        </div>
+                        <div id="row-val" class="tx-value" style="color:var(--status-safe);">&#8377;0.00</div>
+                    </div>
+                </div>
+            </main>
+
+            <aside class="card fade-in" style="animation-delay: 100ms;">
+                <p class="card-title">Live Pipeline Flow</p>
+                <div id="flow-1" class="flow-step"><i class="fas fa-circle-nodes"></i> Incoming Deposit</div>
+                <div id="flow-2" class="flow-step"><i class="fas fa-hourglass-half"></i> Escrow Activated</div>
+                <div id="flow-3" class="flow-step"><i class="fas fa-brain"></i> AI Analysis</div>
+                <div id="flow-4" class="flow-step"><i class="fas fa-triangle-exclamation"></i> Threat Decision</div>
+                <div id="flow-5" class="flow-step"><i class="fas fa-user-check"></i> Final Summary</div>
+            </aside>
+        </div>
+    </div>
+
+    <div id="modal-overlay" class="hidden">
+        
+        <div id="pane-analysis" class="modal-box hidden">
+            <div class="scan-overlay-line"></div>
+            <h2>AI Analysis Layer</h2>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Inspecting real-time contextual transaction flags...</p>
+
+            <div class="sms-preview-panel">
+                <div class="sms-lbl">Intercepted Payload Ingest</div>
+                <div id="sms-body-content" class="sms-msg">...</div>
+                <div id="sms-threat-tag" class="sms-warn">...</div>
+            </div>
+
+            <div class="prog-track"><div id="analysis-bar" class="prog-fill"></div></div>
+
+            <div class="check-card" id="row-check-sender">
+                <span>Sender Reputation</span>
+                <span id="chk-sender" class="check-status" style="color:var(--text-muted);">Checking...</span>
+            </div>
+            <div class="check-card" id="row-check-device">
+                <span>Device Telemetry</span>
+                <span id="chk-device" class="check-status" style="color:var(--text-muted);">Checking...</span>
+            </div>
+            <div class="check-card" id="row-check-behavior">
+                <span>User Behavior Profile</span>
+                <span id="chk-behavior" class="check-status" style="color:var(--text-muted);">Checking...</span>
+            </div>
+
+            <div id="analysis-insights" class="stat-banner hidden">
+                <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                    <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Threat Signature Output</span>
+                </div>
+                <div class="stat-score-container">
+                    <span id="ai-score-label" class="stat-score">AI Confidence: 0%</span>
+                    <span id="ai-time-label" class="stat-time">Analysis Time: --</span>
+                </div>
+                <ul id="ai-reason-bullets" class="stat-bullet-list"></ul>
+            </div>
+
+            <button id="btn-analysis-next" class="modal-btn hidden" onclick="advanceFromAnalysis()"></button>
+        </div>
+
+        <div id="pane-biometric" class="modal-box hidden" style="text-align:center;">
+            <h2>Intent Certification</h2>
+            <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:16px; line-height:1.5;">Face ID scanning required to confirm local intent and isolate any active remote access sessions.</p>
+            <div class="biometric-scanner" id="bio-icon"><i class="fas fa-face-viewfinder"></i></div>
+            <button class="modal-btn" onclick="triggerBiometricScan()">Scan & Attest Intent</button>
+        </div>
+
+        <div id="pane-summary" class="modal-box hidden" style="text-align:center;">
+            <div id="summary-icon-box" style="font-size:3.5rem; margin-bottom:16px; display:inline-block;"></div>
+            <h2 id="summary-title-header">Transaction Protected</h2>
+            <p id="summary-sub-desc" style="color:var(--text-muted); font-size:0.9rem; margin-bottom:4px; line-height:1.4;"></p>
+            
+            <div class="summary-block">
+                <div class="summary-row">
+                    <span class="summary-label">Transaction Volume</span>
+                    <span id="sum-val-amount" class="summary-value">&#8377;0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">GuardRail Action</span>
+                    <span id="sum-val-decision" class="summary-value"></span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Environment Status</span>
+                    <span id="sum-val-status" class="summary-value"></span>
+                </div>
+                <div class="summary-row" id="sum-row-extra">
+                    <span class="summary-label" id="sum-extra-label">Estimated Loss Prevented</span>
+                    <span id="sum-extra-value" class="summary-value" style="color:var(--status-safe); font-weight:800;">&#8377;50,000</span>
+                </div>
+            </div>
+
+            <button class="modal-btn" style="background:var(--accent-cyan); color:#000; font-weight:700;" onclick="closeSuiteToLedger()">Acknowledge & Sync Ledger</button>
+        </div>
+
+    </div>
+
+    <script>
+        let demoMode = 'unsafe'; 
+        let liveBackendState = null; 
+
+        const configurations = {
+            unsafe: {
+                title: "Incoming Bank Transfer",
+                amount: "₹50,000.00",
+                sms: "“₹50,000 was transferred by mistake. Please return it immediately to UPI: scammer@upi”",
+                tag: "<i class='fas fa-triangle-exclamation'></i> GuardRail detected urgency manipulation.",
+                tagColor: "var(--status-warning)",
+                confidence: "96%",
+                time: "482 ms",
+                reasons: ["Refund scam pattern matched", "Sender has no trusted transaction history.", "Remote screen-sharing session detected."],
+                checks: { sender: ["RISK", "var(--status-risk)"], device: ["RISK", "var(--status-risk)"], behavior: ["SUSPICIOUS", "var(--status-warning)"] }
+            },
+            safe: {
+                title: "Tech Mahindra Corporate Payroll",
+                amount: "₹48,000.00",
+                sms: "“Salary of ₹48,000 credited by Tech Mahindra Payroll.”",
+                tag: "<i class='fas fa-circle-check'></i> Verified employer account matched.",
+                tagColor: "var(--status-safe)",
+                confidence: "4%",
+                time: "124 ms",
+                reasons: ["Verified employer account matched.", "No suspicious device activity detected.", "User behavior matches historical patterns."],
+                checks: { sender: ["VERIFIED", "var(--status-safe)"], device: ["SECURE", "var(--status-safe)"], behavior: ["NORMAL", "var(--status-safe)"] }
+            }
+        };
+
+        function setMode(mode) {
+            demoMode = mode;
+            document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`mode-${mode}`).classList.add('active');
+        }
+
+        async function pollBackendStatusUntilDone() {
+            return new Promise((resolve) => {
+                let attempts = 0;
+                const interval = setInterval(async () => {
+                    attempts++;
+                    if (attempts > 15) { // Safety cutout if backend hangs up
+                        clearInterval(interval);
+                        resolve(null);
+                    }
+                    try {
+                        const response = await fetch('http://127.0.0.1:8000/status');
+                        const statusData = await response.json();
+                        if (statusData.ai_engine.ai_status !== "Analyzing" && statusData.ai_engine.ai_status !== "Intercepted") {
+                            clearInterval(interval);
+                            liveBackendState = statusData;
+                            resolve(statusData);
+                        }
+                    } catch (e) {
+                        clearInterval(interval);
+                        resolve(null);
+                    }
+                }, 200);
+            });
+        }
+
+        function formatINR(money) {
+            try {
+                const n = typeof money === 'number' ? money : Number(money);
+                return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 }).format(n);
+            } catch (e) {
+                return `₹${Number(money).toLocaleString()}`;
+            }
+        }
+
+        function animateBalance(targetValue) {
+            const balElement = document.getElementById('account-balance');
+            const currentText = balElement.innerText.replace(/[^\d.]/g, '');
+            const startValue = parseFloat(currentText) || 142500.00;
+            const duration = 400; 
+            const startTime = performance.now();
+
+            function updateCounter(currentTime) {
+                const elapsedTime = currentTime - startTime;
+                if (elapsedTime >= duration) {
+                    balElement.innerText = formatINR(targetValue);
+                } else {
+                    const progress = elapsedTime / duration;
+                    const currentValue = startValue + (targetValue - startValue) * progress;
+                    balElement.innerText = formatINR(currentValue);
+                    requestAnimationFrame(updateCounter);
+                }
+            }
+            requestAnimationFrame(updateCounter);
+        }
+
+        async function bootSimulation() {
+            try {
+                await fetch('http://127.0.0.1:8000/reset', { method: 'POST' });
+                const transaction = demoMode === 'unsafe'
+                    ? { sender: 'Rajesh Kumar', amount: 50000 }
+                    : { sender: 'Tech Mahindra', amount: 48000 };
+
+                const simulateResponse = await fetch('http://127.0.0.1:8000/simulate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(transaction)
+                });
+                const initData = await simulateResponse.json();
+                liveBackendState = initData;
+
+                if (initData && initData.transaction) {
+                    const tx = initData.transaction;
+                    document.getElementById('row-title').innerText = tx.sender_name === 'Scammer123' ? 'Rajesh Kumar' : tx.sender_name;
+                    document.getElementById('row-val').innerText = `+${formatINR(tx.amount)}`;
+                    document.getElementById('sum-val-amount').innerText = formatINR(tx.amount);
+                }
+            } catch (err) {
+                console.warn("FastAPI offline. Firing visual presentation sandbox fallbacks.", err);
+                liveBackendState = null;
+                const fallbackData = configurations[demoMode];
+                document.getElementById('row-title').innerText = fallbackData.title;
+                document.getElementById('row-val').innerText = `+${fallbackData.amount}`;
+                document.getElementById('sum-val-amount').innerText = fallbackData.amount;
+            }
+
+            document.getElementById('landing-screen').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            executePipelineSequencer();
+        }
+
+        function executePipelineSequencer() {
+            const bBadge = document.getElementById('escrow-badge-area');
+            const subTitle = document.getElementById('row-subtitle');
+
+            setFlowStepActive(1);
+            
+            setTimeout(() => {
+                setFlowStepActive(2);
+                bBadge.classList.remove('hidden');
+                bBadge.className = "escrow-container pop-in";
+                bBadge.innerHTML = `<span class="escrow-badge state-hold"><i class="fas fa-hourglass-start"></i> Escrow Hold Active</span>`;
+                subTitle.innerText = "Funds securely placed in escrow...";
+                subTitle.style.color = "var(--status-warning)";
+            }, 400);
+
+            setTimeout(() => {
+                setFlowStepActive(3);
+                bBadge.innerHTML = `<span class="escrow-badge state-analysis"><i class="fas fa-brain"></i> Under AI Analysis</span>`;
+                subTitle.innerText = "Running AI fraud analysis...";
+                subTitle.style.color = "var(--accent-cyan)";
+                
+                openModalView('pane-analysis');
+                runAnalysisProcessLoop();
+            }, 900);
+        }
+
+        function setFlowStepActive(stepIndex) {
+            for (let i = 1; i <= 5; i++) {
+                const step = document.getElementById(`flow-${i}`);
+                if (!step) continue;
+                if (i < stepIndex) {
+                    step.className = "flow-step completed";
+                    step.querySelector('i').className = "fas fa-check";
+                } else if (i === stepIndex) {
+                    step.className = "flow-step active";
+                } else {
+                    step.className = "flow-step";
+                }
+            }
+        }
+
+        function openModalView(paneId) {
+            document.getElementById('modal-overlay').classList.remove('hidden');
+            document.getElementById('pane-analysis').classList.add('hidden');
+            document.getElementById('pane-biometric').classList.add('hidden');
+            document.getElementById('pane-summary').classList.add('hidden');
+            
+            const pane = document.getElementById(paneId);
+            pane.classList.remove('hidden');
+            pane.className = "modal-box scale-up";
+        }
+
+        async function runAnalysisProcessLoop() {
+            const data = configurations[demoMode];
+            
+            document.getElementById('sms-body-content').innerText = data.sms;
+            const threatTag = document.getElementById('sms-threat-tag');
+            threatTag.innerHTML = data.tag;
+            threatTag.style.color = data.tagColor;
+
+            document.getElementById('analysis-insights').className = "stat-banner hidden";
+            document.getElementById('btn-analysis-next').classList.add('hidden');
+            
+            const chkS = document.getElementById('chk-sender');
+            const chkD = document.getElementById('chk-device');
+            const chkB = document.getElementById('chk-behavior');
+            
+            chkS.innerText = "Checking..."; chkS.style.color = "var(--text-muted)";
+            chkD.innerText = "Checking..."; chkD.style.color = "var(--text-muted)";
+            chkB.innerText = "Checking..."; chkB.style.color = "var(--text-muted)";
+
+            const fill = document.getElementById('analysis-bar');
+            fill.style.width = '0%';
+            
+            let pct = 0;
+            const timer = setInterval(() => {
+                pct += 15;
+                if (pct <= 90) fill.style.width = `${pct}%`;
+            }, 40);
+
+            const engineState = await pollBackendStatusUntilDone();
+            
+            clearInterval(timer);
+            fill.style.width = '100%';
+
+            setTimeout(() => {
+                if (engineState) {
+                    chkS.innerText = engineState.ai_engine.sender_risk === 'RISK' ? 'RISK' : 'VERIFIED';
+                    chkS.style.color = engineState.ai_engine.blacklist_hit ? "var(--status-risk)" : "var(--status-safe)";
+                } else {
+                    chkS.innerText = data.checks.sender[0]; chkS.style.color = data.checks.sender[1];
+                }
+                document.getElementById('row-check-sender').style.borderColor = chkS.style.color;
+            }, 100);
+
+            setTimeout(() => {
+                if (engineState) {
+                    chkD.innerText = engineState.ai_engine.device_risk === 'RISK' ? 'RISK' : 'SECURE';
+                    chkD.style.color = engineState.ai_engine.screen_share_detected ? "var(--status-risk)" : "var(--status-safe)";
+                } else {
+                    chkD.innerText = data.checks.device[0]; chkD.style.color = data.checks.device[1];
+                }
+                document.getElementById('row-check-device').style.borderColor = chkD.style.color;
+            }, 250);
+
+            setTimeout(() => {
+                if (engineState) {
+                    chkB.innerText = engineState.ai_engine.typing_anomaly ? "ANOMALOUS" : "STABLE";
+                    chkB.style.color = engineState.ai_engine.typing_anomaly ? "var(--status-warning)" : "var(--status-safe)";
+                } else {
+                    chkB.innerText = data.checks.behavior[0]; chkB.style.color = data.checks.behavior[1];
+                }
+                document.getElementById('row-check-behavior').style.borderColor = chkB.style.color;
+            }, 400);
+
+            setTimeout(() => {
+                displayAnalysisConclusiveMetrics(engineState);
+            }, 550);
+        }
+
+        function displayAnalysisConclusiveMetrics(engineState) {
+            setFlowStepActive(4);
+
+            let riskScore = demoMode === 'unsafe' ? "96%" : "4%";
+            let latencyTime = configurations[demoMode].time;
+            let reasonsList = configurations[demoMode].reasons;
+            let isBlockedPath = demoMode === 'unsafe';
+
+            if (engineState && engineState.ai_engine) {
+                riskScore = (typeof engineState.ai_engine.confidence !== 'undefined')
+                    ? `${engineState.ai_engine.confidence}%`
+                    : `${engineState.ai_engine.risk_score}%`;
+                if (engineState.ai_engine.processing_time) {
+                    latencyTime = `${engineState.ai_engine.processing_time} ms`;
+                }
+                isBlockedPath = engineState.ai_engine.final_decision === "Blocked";
+            }
+
+            const scoreLbl = document.getElementById('ai-score-label');
+            scoreLbl.innerText = `AI Confidence: ${riskScore}`;
+            scoreLbl.style.color = isBlockedPath ? 'var(--status-risk)' : 'var(--status-safe)';
+
+            document.getElementById('ai-time-label').innerText = `Analysis Time: ${latencyTime}`;
+
+            const list = document.getElementById('ai-reason-bullets');
+            list.innerHTML = '';
+            reasonsList.forEach(r => {
+                const li = document.createElement('li');
+                li.innerText = r;
+                if(!isBlockedPath) li.style.setProperty('--status-risk', 'var(--status-safe)');
+                list.appendChild(li);
+            });
+
+            const insights = document.getElementById('analysis-insights');
+            insights.className = "stat-banner pop-in";
+            
+            const nextBtn = document.getElementById('btn-analysis-next');
+            nextBtn.classList.remove('hidden');
+            nextBtn.innerText = isBlockedPath ? "Isolate Threat & Verify Identity" : "Clear & Release Funds";
+            nextBtn.style.background = !isBlockedPath ? "var(--status-safe)" : "var(--accent-blue)";
+        }
+
+        function advanceFromAnalysis() {
+            const isBlockedPath = liveBackendState ? (liveBackendState.ai_engine.final_decision === "Blocked") : (demoMode === 'unsafe');
+            if (isBlockedPath) {
+                openModalView('pane-biometric');
+            } else {
+                buildFinalExecutiveSummary();
+            }
+        }
+
+        function triggerBiometricScan() {
+            const icon = document.getElementById('bio-icon').querySelector('i');
+            icon.className = "fas fa-spinner fa-spin";
+            
+            setTimeout(() => {
+                icon.className = "fas fa-user-check";
+                icon.style.color = "var(--status-safe)";
+                document.getElementById('bio-icon').style.borderColor = "var(--status-safe)";
+                
+                setTimeout(() => {
+                    buildFinalExecutiveSummary();
+                }, 300);
+            }, 800);
+        }
+
+        function buildFinalExecutiveSummary() {
+            setFlowStepActive(5);
+            openModalView('pane-summary');
+
+            const iconBox = document.getElementById('summary-icon-box');
+            const hTitle = document.getElementById('summary-title-header');
+            const desc = document.getElementById('summary-sub-desc');
+            const dVal = document.getElementById('sum-val-decision');
+            const sVal = document.getElementById('sum-val-status');
+            const extraRow = document.getElementById('sum-row-extra');
+
+            const isBlockedPath = liveBackendState ? (liveBackendState.ai_engine.final_decision === "Blocked") : (demoMode === 'unsafe');
+
+            if(isBlockedPath) {
+                iconBox.className = "fas fa-shield-halved pop-in";
+                iconBox.style.color = "var(--status-safe)";
+                iconBox.style.animation = "pulseAlert 2s infinite";
+                hTitle.innerText = "Fraud Prevented";
+                desc.innerText = "GuardRail isolated the suspicious funds before they became accessible.";
+                
+                dVal.innerText = "Blocked"; dVal.style.color = "var(--status-risk)";
+                sVal.innerText = "User Safe"; sVal.style.color = "var(--status-safe)";
+                
+                extraRow.classList.remove('hidden');
+                document.getElementById('sum-extra-value').innerText = document.getElementById('sum-val-amount').innerText;
+            } else {
+                iconBox.className = "fas fa-circle-check pop-in";
+                iconBox.style.color = "var(--status-safe)";
+                iconBox.style.animation = "none";
+                hTitle.innerText = "Transaction Verified";
+                desc.innerText = "AI verification completed successfully. Funds safely added to available balance.";
+                
+                dVal.innerText = "Approved"; dVal.style.color = "var(--status-safe)";
+                sVal.innerText = "Settled"; sVal.style.color = "var(--status-safe)";
+                
+                extraRow.classList.add('hidden');
+            }
+        }
+
+        function closeSuiteToLedger() {
+            document.getElementById('modal-overlay').classList.add('hidden');
+            
+            const badge = document.getElementById('escrow-badge-area');
+            const txIcon = document.getElementById('row-icon-box');
+            const txSub = document.getElementById('row-subtitle');
+            const txVal = document.getElementById('row-val');
+
+            setFlowStepActive(6);
+
+            const isBlockedPath = liveBackendState ? (liveBackendState.ai_engine.final_decision === "Blocked") : (demoMode === 'unsafe');
+            if(isBlockedPath) {
+                if (liveBackendState && liveBackendState.ledger && typeof liveBackendState.ledger.displayed_balance !== 'undefined') {
+                    animateBalance(liveBackendState.ledger.displayed_balance);
+                } else {
+                    animateBalance(142500.00);
+                }
+
+                badge.innerHTML = `<span class="escrow-badge state-locked"><i class="fas fa-ban"></i> Blocked & Defended</span>`;
+                txIcon.innerHTML = `<i class="fas fa-shield-virus"></i>`;
+                txIcon.style.background = "rgba(239, 68, 68, 0.08)";
+                txIcon.style.color = "var(--status-risk)";
+                txIcon.style.borderColor = "rgba(239, 68, 68, 0.15)";
+                txSub.innerText = "Fraud payload isolated and rejected.";
+                txSub.style.color = "var(--status-risk)";
+                txVal.style.setProperty('text-decoration', 'line-through');
+                txVal.style.color = "var(--text-muted)";
+            } else {
+                if (liveBackendState && liveBackendState.ledger && typeof liveBackendState.ledger.displayed_balance !== 'undefined') {
+                    animateBalance(liveBackendState.ledger.displayed_balance);
+                } else {
+                    animateBalance(190500.00);
+                }
+                badge.innerHTML = `<span class="escrow-badge state-analysis" style="background:rgba(16,185,129,0.08); color:var(--status-safe); border-color:rgba(16,185,129,0.15);"><i class="fas fa-circle-check"></i> Disbursed</span>`;
+                txSub.innerText = "Settled directly into standard ledger.";
+                txSub.style.color = "var(--status-safe)";
+            }
+
+            document.getElementById('bio-icon').querySelector('i').className = "fas fa-face-viewfinder";
+            document.getElementById('bio-icon').querySelector('i').style.removeProperty('color');
+            document.getElementById('bio-icon').style.borderColor = "var(--accent-cyan)";
+            document.getElementById('row-check-sender').style.borderColor = "var(--border-subtle)";
+            document.getElementById('row-check-device').style.borderColor = "var(--border-subtle)";
+            document.getElementById('row-check-behavior').style.borderColor = "var(--border-subtle)";
+        }
+    </script>
+</body>
+</html>
