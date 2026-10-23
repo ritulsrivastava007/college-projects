@@ -1,84 +1,73 @@
-# 🌦️ Meteorology1
+# College Projects
 
-A simple project focused on meteorological data analysis and exploration.  
-This repository contains code and resources to work with weather-related datasets and understand basic patterns in meteorology.
+A collection of projects, assignments, and practical implementations developed during my B.Tech journey in Computer Engineering. This repository brings together work from different subjects, including programming, mathematics, Indian Knowledge Systems, and web development.
 
----
+The repository will continue to grow as I explore new concepts and build more projects throughout my academic journey.
 
-## 📌 Overview
+## 📂 Repository Structure
 
-The goal of this project is to:
-- Work with weather/meteorological datasets
-- Perform basic data analysis
-- Understand patterns like temperature, humidity, and other weather parameters
-- Build a foundation for further data science or climate-related projects
-
----
-
-## 🛠️ Technologies Used
-
-- Java / Python (based on implementation)
-- Data Structures and Algorithms
-- File Handling / Data Processing
-
----
-
-## 📁 Project Structure
-
-meteorology1/
+```text
+college-projects/
 │
-├── src/        # Source code
-├── data/       # Dataset files (if any)
-├── README.md   # Project documentation
+├── guardrail_demo/
+│   ├── guardrail.html
+│   └── guardrail.py
+│
+├── IKS/
+│   ├── meteorI.html
+│   ├── meteorII.html
+│   └── meteorIII.html
+│
+├── Maths/
+│   └── growthdecay.java
+│
+└── OOP/
+    └── sudoku/       # Sudoku game (planned)
+```
+
+*The structure may evolve as more projects are added.*
+
+## 📚 Projects
+
+### 🛡️ GuardRail Demo
+
+A demonstration of GuardRail, a concept focused on identifying potential digital scams and helping users recognize suspicious activity.
+
+**Technologies:** Python, HTML
+
+### 🌿 Indian Knowledge Systems (IKS)
+
+A collection of HTML-based projects and learning materials related to meteorology, developed as part of coursework in Indian Knowledge Systems.
+
+**Technologies:** HTML
+
+### 📈 Mathematics
+
+Java implementation of mathematical concepts, including growth and decay.
+
+**Technologies:** Java
+
+### 🧩 Object-Oriented Programming (OOP)
+
+This section will contain projects developed while learning and applying object-oriented programming concepts.
+
+* **Sudoku Game** *(planned)* — A Sudoku game to practise programming logic and OOP principles.
+
+**Technologies:** To be updated as projects are added.
+
+## 🎯 Purpose
+
+* Practise concepts learned in college through implementation.
+* Maintain academic projects in one organized repository.
+* Track my learning and progress as a Computer Engineering student.
+* Build a foundation for future development projects.
+
+## 🚀 What's Next?
+
+More coursework, programming exercises, and mini-projects will be added as I continue learning and experimenting with different technologies.
 
 ---
 
-## 🚀 Features
+**Maintained by [Ritul Srivastava](https://github.com/ritulsrivastava007)**
 
-- Reads and processes meteorological data
-- Performs basic analysis on weather parameters
-- Demonstrates core programming and logic-building skills
-- Easy to extend for advanced use cases
-
----
-
-## ▶️ How to Run
-
-Clone the repository:
-git clone git@github.com:ritulsrivastava007/meteorology1.git
-
-Go to project directory:
-cd meteorology1
-
-Compile and run (Java example):
-javac Main.java
-java Main
-
----
-
-## 📊 Future Improvements
-
-- Real-time weather API integration
-- Data visualization using charts
-- Machine learning-based predictions
-- Enhanced dataset support
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome.  
-Feel free to fork this repository and submit pull requests.
-
----
-
-## 📄 License
-
-This project is open-source under the MIT License.
-
----
-
-## 👨‍💻 Author
-
-Ritul Srivastava  
-GitHub: https://github.com/ritulsrivastava007
+*Learning by building, one project at a time.*
